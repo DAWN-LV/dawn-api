@@ -2,11 +2,25 @@ import "reflect-metadata"
 import { MethodType, PathType } from "../types"
 import { metadata } from "../globals"
 
+export interface ValidationOptions {
+  validClass?: Function
+  required?: boolean
+  trim?: boolean
+}
+
 export interface IAddEndpointDTO {
   method: MethodType
   paths: PathType[]
   target: Record<string, any>
   name: string
+}
+
+export interface IAddArgumentDTO {
+  index: number
+  key: string
+  value: string | ValidationOptions
+  name: string
+  target: Record<string, any>
 }
 
 function addMethodMeta({ method, paths, target, name }: IAddEndpointDTO): void {
@@ -28,4 +42,15 @@ function addMethodMeta({ method, paths, target, name }: IAddEndpointDTO): void {
   metadata.controllers[target.constructor.name] = controller
 }
 
-export { addMethodMeta }
+function addArgumentMeta({ index, key, value, name, target }: IAddArgumentDTO) {
+  const controller = metadata.controllers[target.constructor.name] || {}
+  const endpoint = controller.endpoints?.[name] || {}
+
+  endpoint.arguments = endpoint.arguments || {}
+  endpoint.arguments[index] = { ctxKey: key, ctxValueOptions: value }
+
+  controller.endpoints = { ...controller.endpoints, [name]: endpoint }
+  metadata.controllers[name] = controller
+}
+
+export { addMethodMeta, addArgumentMeta }

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addMethodMeta = void 0;
+exports.addArgumentMeta = exports.addMethodMeta = void 0;
 require("reflect-metadata");
 const globals_1 = require("../globals");
 function addMethodMeta({ method, paths, target, name }) {
@@ -18,4 +18,13 @@ function addMethodMeta({ method, paths, target, name }) {
     globals_1.metadata.controllers[target.constructor.name] = controller;
 }
 exports.addMethodMeta = addMethodMeta;
+function addArgumentMeta({ index, key, value, name, target }) {
+    const controller = globals_1.metadata.controllers[target.constructor.name] || {};
+    const endpoint = controller.endpoints?.[name] || {};
+    endpoint.arguments = endpoint.arguments || {};
+    endpoint.arguments[index] = { ctxKey: key, ctxValueOptions: value };
+    controller.endpoints = { ...controller.endpoints, [name]: endpoint };
+    globals_1.metadata.controllers[name] = controller;
+}
+exports.addArgumentMeta = addArgumentMeta;
 //# sourceMappingURL=common.js.map

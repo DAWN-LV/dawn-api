@@ -3,7 +3,7 @@
   "types": "dist/index.d.ts",
 
   "name": "dawn-api",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "",
   "author": {
     "name": "dawn-lv",
