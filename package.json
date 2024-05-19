@@ -11,7 +11,7 @@
     "@types/express": "^4.17.21",
     "@types/node": "^20.12.12"
   },
-  "name": "dawn",
+  "name": "dawn-lv",
   "version": "0.0.1",
   "description": "",
   "author": {
