@@ -10,5 +10,12 @@
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.12.12"
-  }
+  },
+  "name": "dawn",
+  "description": "",
+  "author": {
+    "name": "DANW-LV",
+    "email": "vitalijs.pankovs@gmail.com"
+  },
+  "license": "MIT"
 }
