@@ -3,11 +3,15 @@
   "types": "dist/index.d.ts",
 
   "name": "dawn-api",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "",
   "author": {
     "name": "dawn-lv",
     "email": "vitalijs.pankovs@gmail.com"
+  },
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/DAWN-LV/dawn-api"
   },
   "license": "MIT",
 
