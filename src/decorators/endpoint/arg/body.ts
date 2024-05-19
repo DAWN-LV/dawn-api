@@ -1,4 +1,4 @@
-import { ValidationOptions, addArgumentMeta } from "src/decorators/common"
+import { ValidationOptions, addArgumentMeta } from "../../../decorators/common"
 
 function Body(options?: string | ValidationOptions) {
   return function (target: Record<string, any>, name: string, index: number) {
