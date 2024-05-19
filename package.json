@@ -12,6 +12,7 @@
     "@types/node": "^20.12.12"
   },
   "name": "dawn",
+  "version": "0.0.1",
   "description": "",
   "author": {
     "name": "DANW-LV",
