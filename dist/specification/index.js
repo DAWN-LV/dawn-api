@@ -80,11 +80,11 @@ function generateSpecification(metadata, options) {
     }
     for (const controllerName in meta.controllers) {
         const controller = meta.controllers[controllerName];
-        controller.paths.forEach(controllerPath => {
+        controller.paths?.forEach(controllerPath => {
             const basePath = options.basePath + convertRegexp(controllerPath);
             for (const endpointName in controller.endpoints) {
                 const endpoint = controller.endpoints[endpointName];
-                endpoint.paths.forEach(endpointPath => {
+                endpoint.paths?.forEach(endpointPath => {
                     const fullPath = basePath + convertRegexp(endpointPath === "/" ? "" : endpointPath);
                     const method = endpoint.method;
                     paths[fullPath] = paths[fullPath] || {};
