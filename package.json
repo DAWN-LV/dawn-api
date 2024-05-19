@@ -12,7 +12,7 @@
     "@types/node": "^20.12.12"
   },
   "name": "dawn-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "author": {
     "name": "dawn-lv",
