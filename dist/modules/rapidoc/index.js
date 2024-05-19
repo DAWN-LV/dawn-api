@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RapidocModule = void 0;
+const path_1 = __importDefault(require("path"));
 const specification_1 = require("../../specification");
 const globals_1 = require("../../globals");
 class RapidocModule {
@@ -9,7 +13,7 @@ class RapidocModule {
         (0, specification_1.generateSpecification)(globals_1.metadata, options);
         app.get("/specification", (_, res) => res.send(specification_1.specification));
         app.get(options.basePath, (_, res) => {
-            res.sendFile("../../common/index.html");
+            res.sendFile(path_1.default.join(__dirname, "dist", "common", "index.html"));
         });
     }
 }
