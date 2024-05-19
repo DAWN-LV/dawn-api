@@ -9,7 +9,7 @@ class RapidocModule {
         (0, specification_1.generateSpecification)(globals_1.metadata, options);
         app.get("/specification", (_, res) => res.send(specification_1.specification));
         app.get(options.basePath, (_, res) => {
-            res.sendFile("../../static/index.html");
+            res.sendFile("../../common/index.html");
         });
     }
 }

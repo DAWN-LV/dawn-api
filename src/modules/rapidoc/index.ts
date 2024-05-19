@@ -11,7 +11,7 @@ abstract class RapidocModule {
 
     app.get("/specification", (_, res) => res.send(specification))
     app.get(options.basePath, (_, res) => {
-      res.sendFile("../../static/index.html")
+      res.sendFile("../../common/index.html")
     })
   }
 }
