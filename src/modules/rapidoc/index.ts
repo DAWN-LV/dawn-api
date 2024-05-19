@@ -1,4 +1,3 @@
-import path from "path"
 import { Express } from "express"
 import { IOptions } from "../../types"
 import { generateSpecification, specification } from "../../specification"
@@ -12,7 +11,7 @@ abstract class RapidocModule {
 
     app.get("/specification", (_, res) => res.send(specification))
     app.get(options.basePath, (_, res) => {
-      res.sendFile(path.join(__dirname, "..", "public", "index.html"))
+      res.sendFile("../../static/index.html")
     })
   }
 }
