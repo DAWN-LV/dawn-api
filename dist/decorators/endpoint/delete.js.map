@@ -1,0 +1,1 @@
+{"version":3,"file":"delete.js","sourceRoot":"","sources":["../../../src/decorators/endpoint/delete.ts"],"names":[],"mappings":";;;AACA,uCAAyC;AACzC,sCAAyC;AAEzC,SAAS,MAAM,CAAC,IAA2B;IACzC,OAAO,UAAU,MAA2B,EAAE,IAAY;QACxD,IAAA,sBAAa,EAAC,EAAE,MAAM,EAAE,QAAQ,EAAE,IAAI,EAAE,KAAK,EAAE,IAAA,mBAAW,EAAC,IAAI,CAAC,EAAE,MAAM,EAAE,CAAC,CAAA;IAC7E,CAAC,CAAA;AACH,CAAC;AAEQ,wBAAM"}

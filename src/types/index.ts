@@ -4,14 +4,13 @@ import { OpenAPIV3_1 } from "openapi-types"
 export type ClassType<T = any> = new (...args: any[]) => T
 export type FlowType = (req: Request, res: Response, next: NextFunction) => Promise<void>
 
-export type MethodType = "get" | "post"
+export type MethodType = "get" | "post" | "delete" | "put"
 export type PathType = string | RegExp
 
 export interface IOptions {
   logging?: boolean
   basePath?: string
   openapi?: {
-    enabled: boolean
     webPath?: string
     specPath?: string,
     publicURL: string,

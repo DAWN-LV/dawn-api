@@ -6,7 +6,7 @@ import { metadata } from "../../globals"
 
 abstract class RapidocModule {
   static async createDocument(app: Express, options: IOptions) {
-    options.openapi = options.openapi || { enabled: true, publicURL: "http://[publicURl]" } 
+    options.openapi = options.openapi || { publicURL: "http://[publicURl]" } 
 
     generateSpecification(metadata, options)
 

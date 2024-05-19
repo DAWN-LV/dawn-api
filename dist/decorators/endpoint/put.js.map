@@ -1,0 +1,1 @@
+{"version":3,"file":"put.js","sourceRoot":"","sources":["../../../src/decorators/endpoint/put.ts"],"names":[],"mappings":";;;AACA,uCAAyC;AACzC,sCAAyC;AAEzC,SAAS,GAAG,CAAC,IAA2B;IACtC,OAAO,UAAU,MAA2B,EAAE,IAAY;QACxD,IAAA,sBAAa,EAAC,EAAE,MAAM,EAAE,KAAK,EAAE,IAAI,EAAE,KAAK,EAAE,IAAA,mBAAW,EAAC,IAAI,CAAC,EAAE,MAAM,EAAE,CAAC,CAAA;IAC1E,CAAC,CAAA;AACH,CAAC;AAEQ,kBAAG"}
