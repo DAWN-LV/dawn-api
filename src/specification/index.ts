@@ -1,5 +1,5 @@
 import { OpenAPIV3_1 } from "openapi-types"
-import { merge } from "../utils"
+import { getPropertiesOfClassValidator, merge, translateMetaField } from "../utils"
 import { IMetadata, IOptions, PathType } from "../types"
 
 export let specification: OpenAPIV3_1.Document = {
@@ -17,6 +17,17 @@ export let specification: OpenAPIV3_1.Document = {
   security: [],
   tags: [],
   externalDocs: undefined
+}
+
+function deriveOasSoure(source) {
+  switch (source) {
+    case "params": {
+      return "path"
+    }
+    default: {
+      return source
+    }
+  }
 }
 
 function convertRegexp(path: any): string {
@@ -61,8 +72,23 @@ function generateSpecification(metadata: IMetadata, options: IOptions) {
 
   servers.push({ url: openapi?.publicURL })
 
-  // Register schemas
-  // ...
+  function registerSchema(obj: any) {
+    if (!obj) return
+    const meta = getPropertiesOfClassValidator(obj)
+
+    if (Object.keys(meta).length > 0) {
+      const properties = {}
+      const required = []
+
+      for (const fieldName in meta) {
+        const tr = translateMetaField(meta[fieldName])
+        properties[fieldName] = { type: tr.type }
+        if (tr.required) required.push(fieldName)
+      }
+
+      schemas[obj.name] = { type: "object", required, properties }
+    }
+  }
 
   for (const controllerName in meta.controllers) {
     const controller = meta.controllers[controllerName]
@@ -83,18 +109,51 @@ function generateSpecification(metadata: IMetadata, options: IOptions) {
           const parameters: OpenAPIV3_1.ParameterObject[] = []
           const requestBodyProperties = {}
 
-          // for (const argId in endpoint.arguments) {
-          //   const argumentMeta = endpoint.arguments[argId]
-          //   const ctxKey = argumentMeta.ctxKey
+          for (const argId in endpoint.arguments) {
+            const argumentMeta = endpoint.arguments[argId]
+            const ctxKey = argumentMeta.ctxKey
 
-          //   if (!["body", "query", "params"].includes(ctxKey)) {
-          //     continue
-          //   }
+            if (!["body", "query", "params"].includes(ctxKey)) {
+              continue
+            }
 
-          //   // Register schema
-          //   // ...
+            registerSchema(argumentMeta.argType)
 
-          // }
+            const oasSource: "body" | "path" | "query" = deriveOasSoure(ctxKey)
+            let required = argumentMeta.ctxValueOptions?.required || oasSource === "path"
+
+            const meta = getPropertiesOfClassValidator(argumentMeta.argType)
+            if (Object.entries(meta).length > 0) {
+              Object.entries(meta).forEach(([name, metaField]) => {
+                const tr = translateMetaField(metaField)
+                if (oasSource === "body") {
+                  requestBodyProperties[name] = { type: tr.type, required: tr.required }
+                } else {
+                  parameters.push({
+                    name,
+                    in: oasSource,
+                    required: oasSource !== "path" ? tr.required : undefined,
+                    // @ts-ignore
+                    schema: { type: tr.type || "string" },
+                  })
+                }
+              })
+            } else {
+              if (oasSource === "body") {
+                requestBodyProperties[argumentMeta.ctxValueOptions] = {
+                  type: argumentMeta.argType?.name || "object",
+                  required,
+                }
+              } else {
+                parameters.push({
+                  name: argumentMeta.ctxValueOptions,
+                  in: oasSource,
+                  required: oasSource !== "path" ? required : undefined,
+                  schema: { type: argumentMeta.argType?.name || "object" },
+                })
+              }
+            }
+          }
 
           const requestBody: OpenAPIV3_1.RequestBodyObject = {
             content: {
@@ -117,8 +176,8 @@ function generateSpecification(metadata: IMetadata, options: IOptions) {
             operationId: `${controllerName}.${endpointName}`,
             summary: endpointName,
             tags: [controllerName],
-            // // @ts-ignore
-            // requestBody: Object.keys(requestBodyProperties).length > 0 ? requestBody : undefined,
+            // @ts-ignore
+            requestBody: Object.keys(requestBodyProperties).length > 0 ? requestBody : undefined,
             parameters,
             responses: {
               "2xx": {

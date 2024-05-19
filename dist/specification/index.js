@@ -18,6 +18,16 @@ exports.specification = {
     tags: [],
     externalDocs: undefined
 };
+function deriveOasSoure(source) {
+    switch (source) {
+        case "params": {
+            return "path";
+        }
+        default: {
+            return source;
+        }
+    }
+}
 function convertRegexp(path) {
     let swaggerPath = '';
     let paramMode = false;
@@ -52,8 +62,22 @@ function generateSpecification(metadata, options) {
     };
     const servers = [];
     servers.push({ url: openapi?.publicURL });
-    // Register schemas
-    // ...
+    function registerSchema(obj) {
+        if (!obj)
+            return;
+        const meta = (0, utils_1.getPropertiesOfClassValidator)(obj);
+        if (Object.keys(meta).length > 0) {
+            const properties = {};
+            const required = [];
+            for (const fieldName in meta) {
+                const tr = (0, utils_1.translateMetaField)(meta[fieldName]);
+                properties[fieldName] = { type: tr.type };
+                if (tr.required)
+                    required.push(fieldName);
+            }
+            schemas[obj.name] = { type: "object", required, properties };
+        }
+    }
     for (const controllerName in meta.controllers) {
         const controller = meta.controllers[controllerName];
         controller.paths.forEach(controllerPath => {
@@ -66,15 +90,50 @@ function generateSpecification(metadata, options) {
                     paths[fullPath] = paths[fullPath] || {};
                     const parameters = [];
                     const requestBodyProperties = {};
-                    // for (const argId in endpoint.arguments) {
-                    //   const argumentMeta = endpoint.arguments[argId]
-                    //   const ctxKey = argumentMeta.ctxKey
-                    //   if (!["body", "query", "params"].includes(ctxKey)) {
-                    //     continue
-                    //   }
-                    //   // Register schema
-                    //   // ...
-                    // }
+                    for (const argId in endpoint.arguments) {
+                        const argumentMeta = endpoint.arguments[argId];
+                        const ctxKey = argumentMeta.ctxKey;
+                        if (!["body", "query", "params"].includes(ctxKey)) {
+                            continue;
+                        }
+                        registerSchema(argumentMeta.argType);
+                        const oasSource = deriveOasSoure(ctxKey);
+                        let required = argumentMeta.ctxValueOptions?.required || oasSource === "path";
+                        const meta = (0, utils_1.getPropertiesOfClassValidator)(argumentMeta.argType);
+                        if (Object.entries(meta).length > 0) {
+                            Object.entries(meta).forEach(([name, metaField]) => {
+                                const tr = (0, utils_1.translateMetaField)(metaField);
+                                if (oasSource === "body") {
+                                    requestBodyProperties[name] = { type: tr.type, required: tr.required };
+                                }
+                                else {
+                                    parameters.push({
+                                        name,
+                                        in: oasSource,
+                                        required: oasSource !== "path" ? tr.required : undefined,
+                                        // @ts-ignore
+                                        schema: { type: tr.type || "string" },
+                                    });
+                                }
+                            });
+                        }
+                        else {
+                            if (oasSource === "body") {
+                                requestBodyProperties[argumentMeta.ctxValueOptions] = {
+                                    type: argumentMeta.argType?.name || "object",
+                                    required,
+                                };
+                            }
+                            else {
+                                parameters.push({
+                                    name: argumentMeta.ctxValueOptions,
+                                    in: oasSource,
+                                    required: oasSource !== "path" ? required : undefined,
+                                    schema: { type: argumentMeta.argType?.name || "object" },
+                                });
+                            }
+                        }
+                    }
                     const requestBody = {
                         content: {
                             "multipart/form-data": {
@@ -95,8 +154,8 @@ function generateSpecification(metadata, options) {
                         operationId: `${controllerName}.${endpointName}`,
                         summary: endpointName,
                         tags: [controllerName],
-                        // // @ts-ignore
-                        // requestBody: Object.keys(requestBodyProperties).length > 0 ? requestBody : undefined,
+                        // @ts-ignore
+                        requestBody: Object.keys(requestBodyProperties).length > 0 ? requestBody : undefined,
                         parameters,
                         responses: {
                             "2xx": {
