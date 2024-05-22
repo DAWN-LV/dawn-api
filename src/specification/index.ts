@@ -69,7 +69,7 @@ function generateSpecification(metadata: IMetadata, options: IOptions) {
     }
   }
   const servers: OpenAPIV3_1.ServerObject[] = []
-
+  
   servers.push({ url: openapi?.publicURL })
 
   function registerSchema(obj: any) {

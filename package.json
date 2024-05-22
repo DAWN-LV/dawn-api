@@ -2,10 +2,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "name": "dawn-api",
-  "version": "0.1.7",
+  "version": "0.0.1",
   "description": "",
   "author": {
-    "name": "dawn-lv",
+    "name": "rapidoc-lv",
     "email": "vitalijs.pankovs@gmail.com"
   },
   "repository": {
